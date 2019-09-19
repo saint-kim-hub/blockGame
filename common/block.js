@@ -21,7 +21,17 @@ var myGameArea = {
         //var ctx = myGameArea.canvas.getContext("2d");
         this.context =this.canvas.getContext("2d");
         //타이머 적용
-        this.interval = setInterval(updateGameArea, 20);
+        this.interval = setInterval(updateGameArea, 20); // 초당 50번
+        // updateGameArea를 호출
+        this.btns = document.querySelectorAll(".controll > button");
+        // this.btn[1].addEventListner("mousedown",moveLeft) ;
+        this.btns[0].addEventListener("mousedown", moveUp);
+        this.btns[0].addEventListener("mouseup", moveStop);
+        this.btns[1].addEventListener("mousedown", moveLeft);
+        this.btns[1].addEventListener("mouseup", moveStop);
+        this.btns[3].addEventListener("mousedown", moveDown);
+        this.btns[3].addEventListener("mouseup", moveStop);
+
     },
     clear : function() {
         this.context.clearRect(0,0, this.canvas.width, this.canvas.height);
@@ -35,16 +45,50 @@ function Component (w, h, c, x, y) {
     this.c = c;
     this.w = w;
     this.h = h;
+    this.sppedX = 0;
+    this.speedY = 0;
     // 외부 실행을 위해 함수에 포함
     this.update = function() {
         ctx = myGameArea.context;
         ctx.fillStyle = c;
         ctx.fillRect(this.x,this.y,this.w,this.h);
     }
+    this.newPos = function() {
+        this.x = this.x + this.speedX;
+        this.y += this.speedY;
+    }
 }
+
+function moveRight() {
+    myGamePiece.speedX = 1;
+}
+
+function moveLeft() {
+    myGamePiece.speedX = -1;
+}
+
+function moveUp() {
+    myGamePiece.speedY = -1;
+}
+
+function moveDown() {
+    myGamePiece.speedY -= 1;
+}
+
+function moveStop() {
+    myGamePiece.speedX = myGamePiece.speedY = 0;
+}
+
 //화면제어를 위한 함수
 function updateGameArea() {
+    var mGAkey = myGameArea.key;
     myGameArea.clear();
-    myGamePiece.x +=1;
+    //myGamePiece.x +=1;
+    if (myGAkey && myGAkey == 37) {myGamePiece.speedX = -1; }
+    if (myGAkey && myGAkey == 39) {myGamePiece.speedX = 1; }
+    if (myGAkey && myGAkey == 38) {myGamePiece.speedY = -1; }
+    if (myGAkey && myGAkey == 40) {myGamePiece.speedY = 1; }
+    if (!mGAkey) moveStop();
+    myGamePiece.newPos();
     myGamePiece.update();
 }
